@@ -1,12 +1,12 @@
 ################################################################################
 #
-# Student Names: Jeroen Bannenberg
+# Student Names: Jeroen Bannenberg, Mabel Traube
 #
 #
-# Student Numbers: 13153900
+# Student Numbers: 13153900, 13982656
 #
 #
-# Group number:
+# Group number: 4
 #
 #
 ###############################################################################
@@ -63,7 +63,6 @@ def exercise_1():
         Exercise 1: drive the car through the maze without using sensors
     '''
 
-    ### YOUR CODE FOR EXERCISE 1 HERE
     call_func('On', [3, 19])
     timer(2.5)
     call_func('Off', [3])
@@ -79,98 +78,71 @@ def exercise_1():
     call_func('On', [3, 19])
     timer(4)
     call_func('Off', [3])
+
     return
 
 
 def stop_wall():
+    '''
+        Keep driving until the robot is close to a wall, then stop.
+    '''
     call_func('On', [3, 19])
+
     while (True):
         distance = call_func('SensorSonar')
+
         if distance[2][0] < 25:
             break
+
     call_func('Off', [3])
+    return
 
 
 def check_sides():
+    '''
+        Check the right side of the robot, and if there is a wall, turn left.
+    '''
+
     timer(1)
 
-    hoek= False
+    # Keep turning until the robot has turned 90 degrees
     call_func('On', [1, 2])
     call_func('On', [2, -2])
 
     while True:
-        print(call_func('SensorGyroA')[1][0])
         if call_func('SensorGyroA')[1][0] >= 90:
             break
 
+    # Stop turning and check the distance to the wall
     call_func('Off', [3])
-
     distance = call_func('SensorSonar')
+
+    # If the distance is less than 25, turn left
     if distance[2][0] < 25:
         call_func('On', [1, -2])
         call_func('On', [2, 2])
 
         while True:
-            print(call_func('SensorGyroA')[1][0])
             if call_func('SensorGyroA')[1][0] <= -90:
                 break
-    call_func('Off', [3])
 
+    call_func('Off', [3])
     call_func('ResetGyroA')
 
-
-
-    # for i in range(4):
-    #
-    #     call_func('On', [1, 19])
-    #     timer(0.25)
-    #     call_func('Off', [1])
-    #     print(call_func('SensorGyroA')[1][0])
-    #     call_func('ResetGyroA')
-    #     if i != 1 and i != 3:
-    #         list_sides.append(call_func('SensorSonar')[2][0])
-    #     timer(1)
-    #
-    # direc = list_sides.index(max(list_sides))
-    # if direc == 0:
-    #     call_func('On', [1, 19])
-    #     timer(0.25)
-    #     call_func('Off', [1])
-    #     timer(1)
-    # else:
-    #     call_func('On', [1, 19])
-    #     timer(0.25)
-    #     call_func('Off', [1])
-    #     timer(1)
-    #     call_func('On', [1, 19])
-    #     timer(0.25)
-    #     call_func('Off', [1])
-    #     timer(1)
-    #     call_func('On', [1, 19])
-    #     timer(0.25)
-    #     call_func('Off', [1])
-    #     timer(1)
-
-
-
+    timer(1)
     return
 
 
 def exercise_2():
-    ''' 
+    '''
         Exercise 2: drive the car through the maze using sensors
     '''
 
-    ### YOUR CODE FOR EXERCISE 2 HERE
-
     stop_wall()
     check_sides()
-    timer(1)
     stop_wall()
     check_sides()
-    timer(1)
     stop_wall()
-
 
     return
 
