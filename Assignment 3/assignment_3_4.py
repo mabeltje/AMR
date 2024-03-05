@@ -37,10 +37,10 @@ def call_func(name, ints=[], floats=[], strings=[]):
         The functions can be found in the "functiones" file in the scene file
     '''
 
-    return sim.simxCallScriptFunction(clientID, 'Funciones', 
-                                      sim.sim_scripttype_childscript, 
-                                      name, ints, floats, strings, 
-                                      bytearray('1', 'utf-8'), 
+    return sim.simxCallScriptFunction(clientID, 'Funciones',
+                                      sim.sim_scripttype_childscript,
+                                      name, ints, floats, strings,
+                                      bytearray('1', 'utf-8'),
                                       sim.simx_opmode_blocking)
 
 
@@ -89,7 +89,7 @@ def timer(wait_time):
         _,_, current_time, _, _ = call_func("CurrentTick")
 
         if (current_time[0] - start_time) > wait_time:
-            break 
+            break
 
 
 def exercise_sonar():
@@ -97,14 +97,32 @@ def exercise_sonar():
         Exercise 3.1: gather measurements (in cartesian coordinate system) of points on the walls of the room using sonar sensor of the robot.
     '''
     x_points, y_points = [], []
+    results = {}
 
-    ##################
-    # YOUR CODE HERE #
-    ##################
-    
+    call_func('On', [1, 1])
+    call_func('On', [2, -1])
+
+    # Do a full rotation and measure the distance to the walls and save the results
+    while call_func('SensorGyroA')[1][0] < 360:
+        distance = call_func('SensorSonar')
+        angle = call_func('SensorGyroA')[1][0]
+
+        # No wall detected if distance is 255.0
+        if distance[2][0] == 255.0:
+            continue
+
+        results[angle] = distance[2][0]
+
+    call_func('Off', [3])
+
+    # Convert the polar coordinates to cartesian coordinates
+    for angle, distance in results.items():
+        x_points.append(distance * np.cos(np.radians(angle)))
+        y_points.append(distance * np.sin(np.radians(angle)))
+
     coords_df = pd.DataFrame({'x': x_points, 'y': y_points})
     coords_df.to_csv('measurements/sonar_coords.csv')
-    return 
+    return
 
 
 def exercise_lidar():
@@ -115,7 +133,7 @@ def exercise_lidar():
 
     coords_df = pd.DataFrame({'x': x_points, 'y': y_points})
     coords_df.to_csv('measurements/lidar_coords.csv')
-    return 
+    return
 
 
 if __name__ == "__main__":
@@ -136,9 +154,9 @@ if __name__ == "__main__":
         elif ARGS.exercise == "lidar":
             print("execute exercise with LiDAR sensor")
             exercise_lidar()
-    
+
         else:
-            print("No exercise executed") 
+            print("No exercise executed")
 
     else:
         print ('Failed connecting to remote API server')
